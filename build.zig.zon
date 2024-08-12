@@ -1,0 +1,15 @@
+.{
+    .name = "box2d",
+    .version = "3.0.0-dev",
+    .dependencies = .{
+        .box2d_source = .{
+            .url = "https://github.com/erincatto/box2d/archive/refs/tags/v3.0.0.tar.gz",
+            .hash = "12209f375091c9cf47972d2d5715d0a1b2137ffe56b7cea36d56e401c02358808878",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
