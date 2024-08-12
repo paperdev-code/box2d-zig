@@ -11,11 +11,10 @@ pub fn build(b: *std.Build) void {
     });
 
     const @"test" = b.addTest(.{
-        .root_source_file = b.path("src/box2d.zig"),
+        .root_source_file = b.path("src/test.zig"),
     });
 
     @"test".root_module.addImport("box2d", box2d.module);
-    @"test".addIncludePath(box2d.include_path);
     b.step("test", "run integration test").dependOn(&@"test".step);
 
     b.installArtifact(box2d.library);
@@ -37,17 +36,20 @@ pub const Box2dImport = struct {
 
 pub fn getImport(b: *std.Build, options: Box2dOptions) Box2dImport {
     const box2d_source = b.dependency("box2d_source", .{});
+    const box2d_include = box2d_source.path("include");
+
     const libbox2d = buildLibrary(b, box2d_source, options);
 
     const box2d = b.addModule("box2d", .{
         .root_source_file = b.path("src/box2d.zig"),
     });
     box2d.linkLibrary(libbox2d);
+    box2d.addIncludePath(box2d_include);
 
     return .{
         .module = box2d,
         .library = libbox2d,
-        .include_path = box2d_source.path("include"),
+        .include_path = box2d_include,
     };
 }
 
