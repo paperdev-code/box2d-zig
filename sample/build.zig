@@ -1,4 +1,6 @@
 const std = @import("std");
+const zigglgen = @import("zigglgen");
+
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -10,7 +12,18 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    exe.root_module.addImport("box2d", b.dependency("box2d", .{}).module("box2d"));
+    const box2d = b.dependency("box2d", .{}).module("box2d");
+    const glfw = b.dependency("glfw", .{}).artifact("glfw");
+    const gl = zigglgen.generateBindingsModule(b, .{
+        .api = .gl,
+        .version = .@"4.6",
+        .profile = .core,
+    });
+
+    exe.root_module.addImport("box2d", box2d);
+    exe.root_module.addImport("gl", gl);
+    exe.linkLibrary(glfw);
+
     b.installArtifact(exe);
 
     const run = b.addRunArtifact(exe);
