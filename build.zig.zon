@@ -6,6 +6,11 @@
             .url = "https://github.com/erincatto/box2d/archive/refs/tags/v3.0.0.tar.gz",
             .hash = "12209f375091c9cf47972d2d5715d0a1b2137ffe56b7cea36d56e401c02358808878",
         },
+        .enkits = .{
+            .url = "https://github.com/dougbinks/enkiTS/archive/refs/tags/v1.11.tar.gz",
+            .hash = "122083d062b3341f33addefaa0e684d5a1d6518f0600a4dba67cc3721df55b47916f",
+            .lazy = true,
+        },
     },
     .paths = .{ "build.zig", "build.zig.zon", "src", "README.md" },
 }

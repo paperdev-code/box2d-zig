@@ -75,4 +75,59 @@ pub fn build(b: *std.Build) void {
     box2d.addIncludePath(box2d_source.path("include"));
 
     b.installArtifact(libbox2d);
+
+    const tests = b.step("test", "run box2d unit tests, requires '-Dbox2d_tests' option.");
+    const test_runner = b.addExecutable(.{
+        .name = "test",
+        .target = target,
+        .optimize = .Debug,
+    });
+
+    test_runner.addCSourceFiles(.{
+        .root = box2d_source.path("test"),
+        .files = &[_][]const u8{
+            "main.c",
+            "test_bitset.c",
+            "test_collision.c",
+            "test_determinism.c",
+            "test_distance.c",
+            "test_math.c",
+            "test_shape.c",
+            "test_table.c",
+            "test_world.c",
+        },
+        .flags = &[_][]const u8{},
+    });
+
+    const expose_tests = b.option(bool, "box2d_tests", "exposes 'zig build test' for box2d tests.");
+
+    if (expose_tests orelse false) {
+        // required for test runner only.
+        const enkits = b.lazyDependency("enkits", .{}).?;
+        const libenkits = b.addStaticLibrary(.{
+            .name = "enkiTS",
+            .target = target,
+            .optimize = .ReleaseFast,
+        });
+
+        libenkits.addCSourceFiles(.{
+            .root = enkits.path("src"),
+            .files = &[_][]const u8{
+                "TaskScheduler.cpp",
+                "TaskScheduler_c.cpp",
+            },
+        });
+
+        libenkits.linkLibCpp();
+        libenkits.addIncludePath(enkits.path("src"));
+
+        test_runner.linkLibrary(libbox2d);
+        test_runner.linkLibrary(libenkits);
+        test_runner.addIncludePath(box2d_source.path("include"));
+        test_runner.addIncludePath(box2d_source.path("src"));
+        test_runner.addIncludePath(enkits.path("src"));
+
+        const run_tests = b.addRunArtifact(test_runner);
+        tests.dependOn(&run_tests.step);
+    }
 }
