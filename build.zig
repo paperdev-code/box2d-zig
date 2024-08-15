@@ -12,7 +12,6 @@ pub fn build(b: *std.Build) void {
 
     const box2d_source = b.dependency("box2d_source", .{});
 
-    libbox2d.linkLibC();
     libbox2d.addCSourceFiles(.{
         .root = box2d_source.path("src"),
         .files = &[_][]const u8{
@@ -55,6 +54,10 @@ pub fn build(b: *std.Build) void {
         .flags = &[_][]const u8{},
     });
 
+    // TODO: we can get rid of libc by adding some
+    //       zig based replacements for certain source files.
+    //       (like the vec2, timers and allocation)
+    libbox2d.linkLibC();
     libbox2d.addIncludePath(box2d_source.path("extern/simde"));
     libbox2d.addIncludePath(box2d_source.path("include"));
 
