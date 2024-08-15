@@ -102,7 +102,7 @@ pub fn build(b: *std.Build) void {
             .flags = &[_][]const u8{},
         });
 
-        const enkits = b.lazyDependency("enkits", .{}).?;
+        const enkits = b.lazyDependency("enkits", .{}) orelse return;
         const libenkits = b.addStaticLibrary(.{
             .name = "enkiTS",
             .target = target,
