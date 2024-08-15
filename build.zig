@@ -77,32 +77,31 @@ pub fn build(b: *std.Build) void {
     b.installArtifact(libbox2d);
 
     const tests = b.step("test", "run box2d unit tests, requires '-Dbox2d_tests' option.");
-    const test_runner = b.addExecutable(.{
-        .name = "test",
-        .target = target,
-        .optimize = .Debug,
-    });
-
-    test_runner.addCSourceFiles(.{
-        .root = box2d_source.path("test"),
-        .files = &[_][]const u8{
-            "main.c",
-            "test_bitset.c",
-            "test_collision.c",
-            "test_determinism.c",
-            "test_distance.c",
-            "test_math.c",
-            "test_shape.c",
-            "test_table.c",
-            "test_world.c",
-        },
-        .flags = &[_][]const u8{},
-    });
-
     const expose_tests = b.option(bool, "box2d_tests", "exposes 'zig build test' for box2d tests.");
 
     if (expose_tests orelse false) {
-        // required for test runner only.
+        const test_runner = b.addExecutable(.{
+            .name = "test",
+            .target = target,
+            .optimize = .Debug,
+        });
+
+        test_runner.addCSourceFiles(.{
+            .root = box2d_source.path("test"),
+            .files = &[_][]const u8{
+                "main.c",
+                "test_bitset.c",
+                "test_collision.c",
+                "test_determinism.c",
+                "test_distance.c",
+                "test_math.c",
+                "test_shape.c",
+                "test_table.c",
+                "test_world.c",
+            },
+            .flags = &[_][]const u8{},
+        });
+
         const enkits = b.lazyDependency("enkits", .{}).?;
         const libenkits = b.addStaticLibrary(.{
             .name = "enkiTS",
