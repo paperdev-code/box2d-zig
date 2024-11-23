@@ -80,12 +80,21 @@ pub fn build(b: *std.Build) void {
 
     b.installArtifact(libbox2d);
 
+    const module_test = b.addTest(.{
+        .root_source_file = b.path("src/test.zig"),
+    });
+
+    module_test.root_module.addImport("box2d", box2d);
+
     const tests = b.step("test", "run box2d unit tests, requires '-Dbox2d_tests' option.");
     const expose_tests = b.option(bool, "box2d_tests", "exposes 'zig build test' for box2d tests.");
 
+    const run_module_test = b.addRunArtifact(module_test);
+    tests.dependOn(&run_module_test.step);
+
     if (expose_tests orelse false) {
         const test_runner = b.addExecutable(.{
-            .name = "test",
+            .name = "box2d_tests",
             .target = target,
             .optimize = .Debug,
         });
@@ -130,7 +139,7 @@ pub fn build(b: *std.Build) void {
         test_runner.addIncludePath(box2d_source.path("src"));
         test_runner.addIncludePath(enkits.path("src"));
 
-        const run_tests = b.addRunArtifact(test_runner);
-        tests.dependOn(&run_tests.step);
+        const run_box2d_tests = b.addRunArtifact(test_runner);
+        tests.dependOn(&run_box2d_tests.step);
     }
 }
