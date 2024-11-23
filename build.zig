@@ -62,12 +62,19 @@ pub fn build(b: *std.Build) void {
         libbox2d.defineCMacro("B2_ENABLE_ASSERT", null);
     }
 
+    const box2d_c = b.addTranslateC(.{
+        .root_source_file = box2d_source.path("include/box2d/box2d.h"),
+        .optimize = optimize,
+        .target = target,
+    });
+
     const box2d = b.addModule("box2d", .{
         .root_source_file = b.path("src/box2d.zig"),
         .optimize = optimize,
         .target = target,
     });
 
+    box2d.addImport("box2d.h", box2d_c.createModule());
     box2d.linkLibrary(libbox2d);
     box2d.addIncludePath(box2d_source.path("include"));
 
