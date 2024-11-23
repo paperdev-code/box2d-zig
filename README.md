@@ -10,5 +10,6 @@ Box2D requires an additional dependency to run tests. This is lazily loaded and 
 ## Roadmap
  - [x] expose the C api.
  - [x] run the box2d unit tests.
- - [ ] create an example application, preferably with zig's package manager.
- - [ ] try to get rid of libc?
+ - [ ] zig wrapper for c api.
+ - [ ] make something with this.
+ - [ ] ~try to get rid of libc?~
